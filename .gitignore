@@ -91,6 +91,7 @@ ENV/
 # Scapy Results = *.pcap
 *.pcap
 
-# Random Pictures and Data
+# Random Pictures, Data, and other junk
 faces/
 pictures/
+frameworks/

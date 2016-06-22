@@ -90,3 +90,7 @@ ENV/
 
 # Scapy Results = *.pcap
 *.pcap
+
+# Random Pictures and Data
+faces/
+pictures/

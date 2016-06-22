@@ -10,7 +10,7 @@ import signal
 interface = "eth0"
 target_ip = "10.0.0.14"
 gateway_ip = "10.0.0.1"
-packet_count = 10000
+packet_count = 15000
 
 # Random Variables For Easy Reuse
 BROADCAST = "ff:ff:ff:ff:ff:ff"

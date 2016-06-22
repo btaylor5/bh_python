@@ -4,8 +4,8 @@ import zlib
 import cv2
 
 from scapy.all import *
-pictures_dir = "./pic_carver/pictures"
-faces_dir = "./pic_carver/faces"
+pictures_dir = "./pictures"
+faces_dir = "./faces"
 pcap_file = "arper.pcap"
 
 def http_assembler(pcap_file):
@@ -29,15 +29,14 @@ def http_assembler(pcap_file):
 
         headers = get_http_headers(http_payload)
         if headers is None:
-            print "headers is None"
             continue
-        
+
         image, image_type = extract_image(headers, http_payload)
 
         if image is not None and image_type is not None:
             file_name = "%s-pic_carver_%d.%s" % (pcap_file, carved_images, image_type)
             fd = open("%s/%s" % (pictures_dir, file_name), "wb")
-            fd = write(image)
+            fd.write(image)
             fd.close()
 
             carved_images += 1
@@ -52,8 +51,7 @@ def http_assembler(pcap_file):
 def get_http_headers(http_payload):
     try:
         headers_raw = http_payload[:http_payload.index("\r\n\r\n")+2]
-
-        headers = dict(re.findall(r"(?P<'name>.*?): (?P<value>.*?)\r\n", headers_raw))
+        headers = dict(re.findall(r"(?P<name>.*?): (?P<value>.*?)\r\n", headers_raw))
     except:
         return None
 
@@ -69,7 +67,6 @@ def extract_image(headers, http_payload):
     try:
         if "image" in headers['Content-Type']:
             image_type = headers['Content-Type'].split("/")[1]
-            print str(image_type)
             image = http_payload[http_payload.index("\r\n\r\n")+4:]
 
             try:

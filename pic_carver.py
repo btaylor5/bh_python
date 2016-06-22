@@ -4,8 +4,8 @@ import zlib
 import cv2
 
 from scapy.all import *
-pictures_dir = "~/pic_carver/pictures"
-faces_dir = "~/pic_carver/faces"
+pictures_dir = "./pic_carver/pictures"
+faces_dir = "./pic_carver/faces"
 pcap_file = "arper.pcap"
 
 def http_assembler(pcap_file):
@@ -29,7 +29,9 @@ def http_assembler(pcap_file):
 
         headers = get_http_headers(http_payload)
         if headers is None:
+            print "headers is None"
             continue
+        
         image, image_type = extract_image(headers, http_payload)
 
         if image is not None and image_type is not None:
@@ -67,14 +69,15 @@ def extract_image(headers, http_payload):
     try:
         if "image" in headers['Content-Type']:
             image_type = headers['Content-Type'].split("/")[1]
+            print str(image_type)
             image = http_payload[http_payload.index("\r\n\r\n")+4:]
 
             try:
                 if "Content-Encoding" in headers.keys():
-                    if headers['Content-Encoding'] == "gzip"
+                    if headers['Content-Encoding'] == "gzip":
                         image = zlib.decompress(image, 16+zlib.MAX_WBITS)
                     elif headers['Content-Encoding'] == "deflate":
-                        image zlib.decompress(image)
+                        image = zlib.decompress(image)
             except:
                 pass
     except:
@@ -97,6 +100,6 @@ def face_detect(path, file_name):
     cv2.imwrite("%s/%s-%s" % (faces_directory, pcap_file, file_name), img)
     return True
 
-carved_images, faces_detected = http_assembler(pcab_file)
+carved_images, faces_detected = http_assembler("arper.pcap")
 print "Extracted: %d images" % carved_images
 print "Detected:  %d faces" % faces_detected

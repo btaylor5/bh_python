@@ -8,7 +8,7 @@ import signal
 
 # Configuration Variables
 interface = "eth0"
-target_ip = "10.0.0.14"
+target_ip = "10.0.0.79"
 gateway_ip = "10.0.0.1"
 packet_count = 15000
 

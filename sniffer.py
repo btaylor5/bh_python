@@ -13,10 +13,10 @@ import time
 from netaddr import IPNetwork, IPAddress
 
 # host to listen on
-host = "172.31.99.65"
+host = "10.0.0.1"
 
 # subnet to target
-subnet = "172.31.99.0/23"
+subnet = "10.0.0.0/23"
 
 # magic string
 magic_message = "ImJustLearning"
